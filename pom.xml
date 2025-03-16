@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
     <version>1.0</version>
     <groupId>yandex.praktikum</groupId>
-    <artifactId>kafka</artifactId>
-    <description>praktikum_module_3</description>
+    <artifactId>praktikum_module_3</artifactId>
+    <description>Итоговый проект третьего модуля Apache Kafka (Яндекс Практикум)</description>
 
     <dependencies>
         <!-- Kafka Connect API -->
@@ -40,7 +40,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
