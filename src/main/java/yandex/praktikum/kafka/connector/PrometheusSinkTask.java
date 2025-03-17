@@ -1,5 +1,6 @@
 package yandex.praktikum.kafka.connector;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.connect.sink.SinkRecord;
@@ -25,19 +26,24 @@ public class PrometheusSinkTask extends SinkTask {
         try {
             httpServer = PrometheusHttpServer.getInstance("http://localhost", 8080);
         } catch (Exception ex) {
-            log.info("Ошибка при инициализации PrometheusHttpServer", ex);
+            log.error("Ошибка при инициализации PrometheusHttpServer", ex);
         }
     }
 
     @Override
     public void put(Collection<SinkRecord> collection) {
         collection.forEach(record -> {
-            MetricEvent metricEvent = (MetricEvent) record.value();
-            String prometheusData = String.format(
-                    "# HELP %s %s\n# TYPE %s %s\n%s %f\n",
-                    metricEvent.getName(), metricEvent.getDescription(), metricEvent.getName(), metricEvent.getType(),
-                    metricEvent.getName(), metricEvent.getValue());
-            httpServer.addMetric(metricEvent.getName(), prometheusData);
+            String stringRecord = (String) record.value();
+            try {
+                MetricEvent metricEvent = MAPPER.readValue(stringRecord, MetricEvent.class);
+                String prometheusData = String.format(
+                        "# HELP %s %s\n# TYPE %s %s\n%s %f\n",
+                        metricEvent.getName(), metricEvent.getDescription(), metricEvent.getName(),
+                        metricEvent.getType(), metricEvent.getName(), metricEvent.getValue());
+                httpServer.addMetric(metricEvent.getName(), prometheusData);
+            } catch (JsonProcessingException ex) {
+                log.error("Ошибка при парсинге сообщения из kafka", ex);
+            }
         });
     }
 

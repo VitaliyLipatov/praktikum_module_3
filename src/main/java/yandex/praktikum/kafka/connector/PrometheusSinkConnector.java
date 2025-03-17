@@ -14,15 +14,15 @@ import java.util.Map;
 public class PrometheusSinkConnector extends SinkConnector {
 
     private String prometheusUrl;
-    private String prometheusPort;
+    private int prometheusPort;
 
     @Override
     public void start(Map<String, String> props) {
         try {
             log.info("Starting Prometheus Sink Connector with props {}", props);
-            prometheusUrl = props.get("prometheusUrl");
-            prometheusPort = props.get("prometheusPort");
-            PrometheusHttpServer.getInstance(prometheusUrl, Integer.parseInt(prometheusPort));
+            this.prometheusUrl = "http://localhost";
+            this.prometheusPort = 8080;
+            PrometheusHttpServer.getInstance(prometheusUrl, prometheusPort);
         } catch (Exception ex) {
             log.error("Error starting Prometheus Sink Connector", ex);
         }
@@ -38,7 +38,7 @@ public class PrometheusSinkConnector extends SinkConnector {
         List<Map<String, String>> taskConfigs = new ArrayList<>();
         Map<String, String> taskProps = new HashMap<>();
         taskProps.put("prometheusUrl", prometheusUrl);
-        taskProps.put("prometheusPort", prometheusPort);
+        taskProps.put("prometheusPort", String.valueOf(prometheusPort));
         for (int i = 0; i < maxTasks; i++) {
             taskConfigs.add(taskProps);
         }
@@ -53,8 +53,7 @@ public class PrometheusSinkConnector extends SinkConnector {
     @Override
     public ConfigDef config() {
         return new ConfigDef()
-                .define("prometheusUrl", ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "url prometheus")
-                .define("prometheusPort", ConfigDef.Type.INT, 8080, ConfigDef.Importance.HIGH, "port prometheus");
+                .define("prometheus.listener.url", ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "url prometheus");
     }
 
     @Override
