@@ -24,7 +24,7 @@ public class PrometheusSinkTask extends SinkTask {
     @Override
     public void start(Map<String, String> map) {
         try {
-            httpServer = PrometheusHttpServer.getInstance("http://localhost", 8080);
+            httpServer = PrometheusHttpServer.getInstance("http://localhost", 9090);
         } catch (Exception ex) {
             log.error("Ошибка при инициализации PrometheusHttpServer", ex);
         }

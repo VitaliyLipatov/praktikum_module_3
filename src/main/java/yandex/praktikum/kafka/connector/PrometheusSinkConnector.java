@@ -37,8 +37,8 @@ public class PrometheusSinkConnector extends SinkConnector {
     public List<Map<String, String>> taskConfigs(int maxTasks) {
         List<Map<String, String>> taskConfigs = new ArrayList<>();
         Map<String, String> taskProps = new HashMap<>();
-        taskProps.put("prometheusUrl", prometheusUrl);
-        taskProps.put("prometheusPort", String.valueOf(prometheusPort));
+        taskProps.put("url", prometheusUrl);
+        taskProps.put("port", String.valueOf(prometheusPort));
         for (int i = 0; i < maxTasks; i++) {
             taskConfigs.add(taskProps);
         }
