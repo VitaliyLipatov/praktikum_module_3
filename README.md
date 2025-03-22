@@ -58,3 +58,42 @@ curl -X PUT \
 }' \
 http://localhost:8083/connectors/postgres-source/config
 
+Задание 2.
+Инфраструктура проекта для запуска в ресурсах в папке infra-prometheus.
+Конфигурация коннектора описана в папке prometheus в файле config.json.
+Там указан топик test-topic, куда необходимо отправлять сообщения и url, по которому будут отдаваться метрики
+http://localhost:8080/metrics, также указан класс-коннектор PrometheusSinkConnector.
+Поднимается инфраструктура стандартно командой 'docker-compose up -d' через консоль.
+Для конфигурации коннектора используется команда:
+'curl -X POST -H "Content-Type: application/json" --data @config.json http://localhost:8083/connectors'
+Для получения статуса коннектора:
+'curl http://localhost:8083/connectors/prometheus-connector/status'
+Если вдруг требуется удалить коннектор:
+'curl -X DELETE http://localhost:8083/connectors/prometheus-connector'
+
+Проект собирается с помощью maven, джарник praktikum_module_3-1.0.jar необходимо положить в директорию 
+confluent-hub-components.
+Класс PrometheusHttpServer - предоставляет endpoint /merics, который будет опрашивать прометеус
+Класс PrometheusSinkTask - реализует логику преобразования сообщения из топика test-topic в строковый формат, 
+понятный для прометеуса (ключевой метод public void put(Collection<SinkRecord> collection) {})
+Класс PrometheusSinkConnector - это основной класс коннектора, инициализирует коннектор и конфигурацию, 
+а также  определяет, сколько задач будет запущено (tasks.max) и какие параметры будут переданы каждой задаче.
+
+После запуск коннектора из консоли нужно перейти в kafka ui по адресу http://localhost:8085 
+и отправить сообщение с метрикой в топик test-topic:
+{
+"name": "Alloc",
+"type": "gauge",
+"description": "Alloc is bytes of allocated heap objects.",
+"value": 2.4293912E7
+}
+Далее в браузере перейдём по адресу http://localhost:8080/metrics и увидим отражение метрики:
+# Base URL: http://localhost
+# HELP Alloc Alloc is bytes of allocated heap objects.
+# TYPE Alloc gauge
+Alloc 24293912.000000
+
+Аналогичным образом можно отправить ещё несколько сообщений в топик.
+Прикладываю также скриншот для подтверждения в ресурсы.
+
+

@@ -1,0 +1,6 @@
+{
+  "name": "Alloc",
+  "type": "gauge",
+  "description": "Alloc is bytes of allocated heap objects.",
+  "value": 2.4293912E7
+}
